@@ -1,0 +1,133 @@
+﻿@model IEnumerable<UniManage.Models.Assignment>
+
+@{
+    ViewBag.Title = "Manage Assignments";
+}
+
+<div class="container" style="margin-top:40px; font-family: 'Segoe UI', sans-serif;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 style="color: #2c3e50; font-weight: 700;">Assignment Management</h2>
+            <p class="text-muted">
+                @if (User.IsInRole("Admin"))
+                {<span>Viewing all system assignments as Admin.</span> }
+                else
+                { <span>Managing assignments for your assigned courses.</span>}
+            </p>
+        </div>
+        <a href="@Url.Action("Create", "Assignments")" class="btn btn-primary shadow-sm" style="border-radius: 10px; padding: 10px 20px;">
+            <i class="fas fa-plus-circle me-1"></i> Create New Assignment
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0" style="border-radius: 15px; overflow: hidden;">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead style="background-color: #f8f9fa; color: #495057;">
+                        <tr>
+                            <th class="ps-4 py-3">Course</th>
+                            <th class="py-3">Assignment Title</th>
+                            <th class="py-3 text-center">Deadline Status</th>
+                            <th class="py-3 text-center">Resources</th>
+                            <th class="py-3 text-center">Management Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!Model.Any())
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center py-5 text-muted">
+                                    <i class="fas fa-folder-open fa-3x mb-3 opacity-25"></i>
+                                    <p>No assignments found for your courses.</p>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            foreach (var item in Model)
+                            {
+                                var isOverdue = item.Deadline < DateTime.Now;
+                                <tr>
+                                    <td class="ps-4 py-3 align-middle">
+                                        <span class="badge bg-light text-dark border p-2 shadow-sm">
+                                            <i class="fas fa-book me-1 text-primary"></i> @item.Course.CourseName
+                                        </span>
+                                    </td>
+                                    <td class="py-3 align-middle">
+                                        <div style="font-weight: 600; color: #34495e;">@item.Title</div>
+                                        <small class="text-muted">@(item.Description.Length > 40 ? item.Description.Substring(0, 40) + "..." : item.Description)</small>
+                                    </td>
+                                    <td class="py-3 align-middle text-center">
+                                        <span class="badge rounded-pill @(isOverdue ? "bg-danger" : "bg-success")" style="font-weight: 500; padding: 8px 12px;">
+                                            <i class="fas @(isOverdue ? "fa-exclamation-circle" : "fa-check-circle") me-1"></i>
+                                            @item.Deadline.ToString("MMM dd, yyyy")
+                                        </span>
+                                    </td>
+                                    <td class="py-3 align-middle text-center">
+                                        @if (!string.IsNullOrEmpty(item.FilePath))
+                                        {
+                                            <a href="@Url.Content("~/Uploads/" + item.FilePath)" download class="btn btn-sm btn-outline-info rounded-pill" title="Download Material">
+                                                <i class="fas fa-download"></i>
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted small">No files</span>
+                                        }
+                                    </td>
+                                    <td class="py-3 align-middle text-center">
+                                        <div class="btn-group shadow-sm" role="group">
+                                            @* View Students Enrolled in this specific course *@
+                                            <a href="@Url.Action("StudentList", "Enrollment", new { courseId = item.CourseId })" class="btn btn-sm btn-light text-warning" title="View Enrolled Students">
+                                                <i class="fas fa-users"></i>
+                                            </a>
+
+                                            @* View Submissions for this specific assignment *@
+                                            <a href="@Url.Action("ViewAnswers", "Submissions", new { assignmentId = item.AssignmentId })" class="btn btn-sm btn-light text-success" title="View Submissions">
+                                                <i class="fas fa-file-invoice"></i>
+                                            </a>
+
+                                            <a href="@Url.Action("Edit", new { id = item.AssignmentId })" class="btn btn-sm btn-light text-primary" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+
+                                            <a href="@Url.Action("Delete", new { id = item.AssignmentId })" class="btn btn-sm btn-light text-danger" title="Delete">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Icons සහ Styles *@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+    .table-hover tbody tr:hover {
+        background-color: #f8fbff;
+        transition: 0.3s;
+    }
+
+    .btn-group .btn {
+        border: 1px solid #eee;
+        padding: 8px 12px;
+        background: #fff;
+    }
+
+        .btn-group .btn:hover {
+            background-color: #f1f3f5;
+            transform: translateY(-1px);
+        }
+
+    .badge {
+        letter-spacing: 0.3px;
+    }
+</style>

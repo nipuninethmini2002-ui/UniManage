@@ -1,0 +1,173 @@
+﻿@{
+    ViewBag.Title = "Discover UniManage";
+}
+
+<style>
+    /* Premium Navy & Gold Gradient */
+    .about-hero {
+        background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+        color: white;
+        padding: 120px 0;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+        /* Floating Shapes for Modern Look */
+        .about-hero::after {
+            content: "";
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+        }
+
+    .hero-title {
+        font-size: 4rem;
+        font-weight: 800;
+        letter-spacing: -1px;
+        margin-bottom: 20px;
+    }
+
+    .section-title {
+        font-weight: 700;
+        color: #1a2a6c;
+        position: relative;
+        display: inline-block;
+        margin-bottom: 40px;
+    }
+
+        .section-title::after {
+            content: "";
+            width: 50px;
+            height: 4px;
+            background: #f39c12; /* Gold accent */
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+    /* Feature Cards - Glassmorphism touch */
+    .benefit-card {
+        background: #ffffff;
+        border: none;
+        border-radius: 20px;
+        padding: 40px;
+        text-align: center;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+        transition: all 0.4s ease;
+        height: 100%;
+    }
+
+        .benefit-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.1);
+            background: #1a2a6c;
+            color: white;
+        }
+
+        .benefit-card i {
+            font-size: 3rem;
+            color: #f39c12;
+            margin-bottom: 25px;
+        }
+
+        .benefit-card:hover i {
+            color: white;
+        }
+
+    /* Call to Action Section */
+    .cta-section {
+        background: #f8f9fa;
+        border-radius: 30px;
+        padding: 60px;
+        margin-top: 80px;
+        border: 1px solid #e9ecef;
+    }
+
+    .badge-premium {
+        background: rgba(243, 156, 18, 0.2);
+        color: #d35400;
+        font-weight: bold;
+        padding: 8px 20px;
+        border-radius: 50px;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+    }
+</style>
+
+<div class="about-hero">
+    <div class="container">
+        <span class="badge badge-light mb-3">Academic Excellence</span>
+        <h1 class="hero-title">Your Future Starts Here.</h1>
+        <p class="lead px-md-5">Join a community where technology meets ambition. UniManage is designed to empower the next generation of leaders, thinkers, and creators.</p>
+        <div class="mt-5">
+            <a href="@Url.Action("Register", "Account")" class="btn btn-warning btn-lg px-5 font-weight-bold shadow">Become a Student</a>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="container my-5">
+    <div class="row text-center section-padding">
+        <div class="col-md-12">
+            <h2 class="section-title">Why Students Love UniManage?</h2>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="benefit-card">
+                <i class="fas fa-rocket"></i>
+                <h4>Fast-Track Learning</h4>
+                <p>Access your study materials, lectures, and grades instantly. No more waiting, just learning at your own pace.</p>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="benefit-card">
+                <i class="fas fa-globe"></i>
+                <h4>Global Standards</h4>
+                <p>A curriculum and management system built on international standards to prepare you for the global job market.</p>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="benefit-card">
+                <i class="fas fa-award"></i>
+                <h4>Recognized Success</h4>
+                <p>Track your achievements and build a digital portfolio that stands out to top employers worldwide.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="cta-section text-center">
+        <div class="row align-items-center">
+            <div class="col-md-8 text-md-left">
+                <h2 class="font-weight-bold">Ready to take the first step?</h2>
+                <p class="text-muted lead">Thousands of students are already using UniManage to achieve their academic dreams. Don't be left behind.</p>
+            </div>
+            <div class="col-md-4 text-md-right">
+                <a href="@Url.Action("Login", "Account")" class="btn btn-primary btn-lg px-5">Get Started Today</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5 py-5 text-center">
+        <div class="col-md-4">
+            <h2 class="font-weight-bold text-primary">5,000+</h2>
+            <p class="text-muted">Active Students</p>
+        </div>
+        <div class="col-md-4">
+            <h2 class="font-weight-bold text-primary">150+</h2>
+            <p class="text-muted">Expert Lecturers</p>
+        </div>
+        <div class="col-md-4">
+            <h2 class="font-weight-bold text-primary">98%</h2>
+            <p class="text-muted">Success Rate</p>
+        </div>
+    </div>
+</div>

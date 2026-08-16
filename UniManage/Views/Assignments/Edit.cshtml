@@ -1,0 +1,88 @@
+﻿@model UniManage.Models.Assignment
+
+@{
+    ViewBag.Title = "Edit Assignment";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0" style="border-radius: 20px;">
+
+                <div class="card-header text-white p-4" style="background: linear-gradient(135deg, #5e72e4 0%, #825ee4 100%); border-radius: 20px 20px 0 0;">
+                    <h3 class="mb-0 fw-bold"><i class="fas fa-edit me-2"></i> Edit Assignment</h3>
+                </div>
+
+                <div class="card-body p-5 bg-white">
+                    @* වැදගත්: enctype කොටස මෙහි අනිවාර්ය වේ *@
+                    @using (Html.BeginForm("Edit", "Assignments", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true, "", new { @class = "alert alert-danger shadow-sm" })
+
+                        @Html.HiddenFor(model => model.AssignmentId)
+                        @Html.HiddenFor(model => model.FilePath) @* පරණ ෆයිල් නම රඳවා ගැනීමට *@
+
+                        @* Assignment Title *@
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-muted small text-uppercase">Assignment Title</label>
+                            @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control rounded-pill", placeholder = "Enter title" } })
+                            @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger small" })
+                        </div>
+
+                        @* Description *@
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-muted small text-uppercase">Description</label>
+                            @Html.TextAreaFor(model => model.Description, new { @class = "form-control", rows = "3" })
+                            @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="row mb-4">
+                            @* Deadline *@
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-muted small text-uppercase">Deadline</label>
+                                @Html.TextBoxFor(model => model.Deadline, "{0:yyyy-MM-ddTHH:mm}", new { @class = "form-control rounded-pill", type = "datetime-local" })
+                                @Html.ValidationMessageFor(model => model.Deadline, "", new { @class = "text-danger small" })
+                            </div>
+
+                            @* Course *@
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-muted small text-uppercase">Course</label>
+                                @Html.DropDownList("CourseId", null, htmlAttributes: new { @class = "form-select rounded-pill" })
+                                @Html.ValidationMessageFor(model => model.CourseId, "", new { @class = "text-danger small" })
+                            </div>
+                        </div>
+
+                        @* File Upload Section *@
+                        <div class="mb-4 p-4 border-dashed rounded-3 bg-light" style="border: 2px dashed #dee2e6;">
+                            <label class="form-label fw-bold text-muted small text-uppercase">Attachment (PDF/Doc)</label>
+
+                            @if (!string.IsNullOrEmpty(Model.FilePath))
+                            {
+                                <div class="mb-3 d-flex align-items-center">
+                                    <i class="fas fa-file-pdf fa-2x text-danger me-2"></i>
+                                    <div>
+                                        <small class="text-muted d-block">Current File:</small>
+                                        <span class="fw-bold">@Model.FilePath</span>
+                                    </div>
+                                </div>
+                            }
+
+                            <div class="input-group">
+                                <input type="file" name="uploads" id="uploads" class="form-control" />
+                            </div>
+                            <small class="text-muted mt-2 d-block small italic">Leave empty to keep the current file.</small>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="@Url.Action("Index")" class="btn btn-outline-secondary px-4 rounded-pill">Cancel</a>
+                            <button type="submit" class="btn btn-primary px-5 rounded-pill shadow-sm fw-bold">Update Assignment</button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

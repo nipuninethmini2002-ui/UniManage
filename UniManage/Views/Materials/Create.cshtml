@@ -1,0 +1,56 @@
+﻿@model UniManage.Models.CourseMaterial
+
+@{
+    ViewBag.Title = "Upload Material";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow border-0" style="border-radius: 15px;">
+                <div class="card-header bg-primary text-white text-center py-3" style="border-radius: 15px 15px 0 0;">
+                    <h4 class="mb-0"><i class="fas fa-cloud-upload-alt mr-2"></i> Upload Course Material</h4>
+                </div>
+                <div class="card-body p-4">
+                    @* enctype අනිවාර්යයෙන්ම තිබිය යුතුයි file upload සඳහා *@
+                    @using (Html.BeginForm("Create", "Materials", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                        <div class="form-group mb-3">
+                            <label class="form-label font-weight-bold">Select Course</label>
+                            @Html.DropDownList("CourseId", null, "-- Select Course --", htmlAttributes: new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.CourseId, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="form-label font-weight-bold">Material Title</label>
+                            @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control", placeholder = "e.g. Lecture 01 Notes" } })
+                            @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="form-label font-weight-bold">Description (Optional)</label>
+                            @Html.TextAreaFor(model => model.Description, new { @class = "form-control", rows = "3" })
+                            @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label class="form-label font-weight-bold">Select File</label>
+                            <input type="file" name="uploadFile" class="form-control" />
+                            <small class="text-muted">PDF, Word, or Image files are recommended.</small>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-block py-2">
+                                <i class="fas fa-upload mr-1"></i> Start Upload
+                            </button>
+                            <a href="@Url.Action("Index")" class="btn btn-light btn-block">Cancel</a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

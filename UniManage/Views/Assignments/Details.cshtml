@@ -1,0 +1,157 @@
+﻿@model UniManage.Models.Assignment
+
+@{
+    ViewBag.Title = "Assignment Details";
+}
+
+@* Font Awesome සහ Google Fonts *@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f4f7f6;
+    }
+
+    .details-card {
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        border: none;
+    }
+
+    .status-badge {
+        font-size: 0.85rem;
+        padding: 8px 15px;
+        border-radius: 50px;
+    }
+
+    .label-text {
+        color: #8898aa;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        font-weight: bold;
+        letter-spacing: 1px;
+    }
+
+    .content-text {
+        color: #32325d;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .deadline-box {
+        background: #fff5f5;
+        border-left: 5px solid #f5365c;
+        padding: 15px;
+        border-radius: 10px;
+    }
+</style>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+
+            @if (Model == null)
+            {
+                <div class="alert alert-warning border-0 shadow-sm text-center p-5">
+                    <i class="fas fa-search fa-3x mb-3 text-warning"></i>
+                    <h4>Assignment Not Found</h4>
+                    <p>The assignment you are looking for does not exist or has been removed.</p>
+                    <a href="@Url.Action("Index")" class="btn btn-primary rounded-pill px-4">Go Back to List</a>
+                </div>
+            }
+            else
+            {
+        <div class="card details-card overflow-hidden">
+            @* Header *@
+            <div class="card-header p-4" style="background: linear-gradient(135deg, #5e72e4 0%, #825ee4 100%); color: white; border: none;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="mb-0 fw-bold"><i class="fas fa-tasks me-2"></i> Assignment Info</h2>
+                        <p class="mb-0 opacity-75">Course: @Model.Course.CourseName</p>
+                    </div>
+                    <div class="bg-white text-primary px-3 py-1 rounded-pill shadow-sm fw-bold">
+                        ID: #A-@Model.AssignmentId
+                    </div>
+                </div>
+            </div>
+
+            @* Body *@
+            <div class="card-body p-5 bg-white">
+                <div class="row mb-4">
+                    <div class="col-12 mb-4">
+                        <div class="label-text mb-1">Assignment Title</div>
+                        <div class="content-text h3" style="color: #5e72e4;">@Model.Title</div>
+                    </div>
+
+                    <div class="col-12 mb-4">
+                        <div class="label-text mb-1">Description</div>
+                        <div class="content-text fw-normal text-muted" style="line-height: 1.7;">
+                            @(string.IsNullOrEmpty(Model.Description) ? "No description provided for this assignment." : Model.Description)
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <div class="deadline-box">
+                            <div class="label-text mb-1 text-danger">Submission Deadline</div>
+                            <div class="content-text text-danger">
+                                <i class="far fa-calendar-alt me-2"></i> @Model.Deadline.ToString("f")
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-4 d-flex align-items-center">
+                        <div class="ms-md-4">
+                            <div class="label-text mb-1">Related Course</div>
+                            <div class="content-text">
+                                <i class="fas fa-book-open me-2 text-primary"></i> @Model.Course.CourseName
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @if (DateTime.Now > Model.Deadline.AddDays(10))
+            {
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle"></i> Submissions are closed for this assignment.
+                </div>
+            }
+            else if (DateTime.Now > Model.Deadline)
+            {
+                <div class="alert alert-warning">
+                    <i class="fas fa-clock"></i> Note: This will be a late submission.
+                </div>
+                @* Submit Form eka methana danna *@
+            }
+
+            @* Footer *@
+            <div class="card-footer bg-light p-4 d-flex justify-content-between align-items-center border-0">
+                @* Student කෙනෙක්ට List එක පෙන්වන්න ඕනේ නැති නිසා අපි කලින් දාපු logic එකම මෙතනත් දාමු *@
+                @if (!User.IsInRole("Student"))
+                {
+                    <a href="@Url.Action("Index")" class="btn btn-outline-secondary px-4 rounded-pill fw-bold">
+                        <i class="fas fa-chevron-left me-1"></i> Back to List
+                    </a>
+                }
+                else
+                {
+                    <a href="@Url.Content("~/")" class="btn btn-outline-primary px-4 rounded-pill fw-bold">
+                        <i class="fas fa-home me-1"></i> Home
+                    </a>
+                }
+
+                <div class="d-flex gap-2">
+                    @if (User.IsInRole("Admin") || User.IsInRole("Lecturer"))
+                    {
+                        <a href="@Url.Action("Edit", new { id = Model.AssignmentId })" class="btn btn-info px-4 rounded-pill text-white fw-bold shadow-sm">
+                            <i class="fas fa-edit me-1"></i> Edit Task
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+            }
+        </div>
+    </div>
+</div>

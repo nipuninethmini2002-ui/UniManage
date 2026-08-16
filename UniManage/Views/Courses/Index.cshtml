@@ -1,0 +1,273 @@
+﻿@model IEnumerable<UniManage.Models.Course>
+
+@{
+    ViewBag.Title = "Course Management";
+}
+
+@* Google Fonts සහ Icons *@
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+    body {
+        background-color: #f4f7f9;
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* Header styling */
+    .page-header-custom {
+        background: linear-gradient(135deg, #1a2a6c 0%, #2a4858 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 10px 25px rgba(26, 42, 108, 0.15);
+        position: relative;
+    }
+
+    /* Alert Styling */
+    .custom-alert {
+        border-radius: 15px;
+        border: none;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    /* Table Container */
+    .table-container {
+        background: white;
+        padding: 0;
+        border-radius: 20px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        overflow: hidden;
+    }
+
+    .table thead {
+        background-color: #f8fafc;
+        color: #1a2a6c;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+    }
+
+        .table thead th {
+            padding: 20px 25px;
+            border: none;
+        }
+
+    .course-row {
+        border-bottom: 1px solid #f1f5f9;
+        transition: 0.3s;
+    }
+
+        .course-row:hover {
+            background-color: #f8fbff;
+        }
+
+    /* Button Styling */
+    .btn-create-new {
+        background: linear-gradient(to right, #f39c12, #e67e22);
+        color: white;
+        border-radius: 12px;
+        padding: 12px 25px;
+        font-weight: 700;
+        border: none;
+        transition: 0.3s;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+    }
+
+        .btn-create-new:hover {
+            background: #d35400;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(230, 126, 34, 0.4);
+        }
+
+    .action-btn {
+        width: 38px;
+        height: 38px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        margin: 2px;
+        transition: 0.2s;
+        border: 1px solid transparent;
+    }
+
+    .btn-role-action {
+        border-radius: 10px;
+        font-size: 0.8rem;
+        padding: 8px 15px;
+        font-weight: 600;
+        border: none;
+        transition: 0.3s;
+    }
+
+    .btn-students {
+        background: #e0f2fe;
+        color: #0369a1;
+    }
+
+        .btn-students:hover {
+            background: #0369a1;
+            color: white;
+        }
+
+    .btn-submissions {
+        background: #eef2ff;
+        color: #4338ca;
+    }
+
+        .btn-submissions:hover {
+            background: #4338ca;
+            color: white;
+        }
+
+    .limit-badge {
+        background: #f1f5f9;
+        color: #1a2a6c;
+        font-weight: 700;
+        padding: 6px 15px;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+    }
+</style>
+
+<div class="container mt-5">
+
+    @* --- Feedback Messages Section (Marking Scheme requirement) --- *@
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger custom-alert alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fas fa-exclamation-triangle mr-2"></i> @TempData["ErrorMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success custom-alert alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fas fa-check-circle mr-2"></i> @TempData["SuccessMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    @* Page Header *@
+    <div class="page-header-custom d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="font-weight-bold mb-1"><i class="fas fa-layer-group mr-2"></i> Course Catalog</h2>
+            <p class="mb-0 opacity-75">
+                @if (User.IsInRole("Admin"))
+                {<span><i class="fas fa-user-shield mr-1"></i> Global Administration: Manage all university curricula.</span> }
+                else
+                { <span><i class="fas fa-chalkboard-teacher mr-1"></i> Academic Panel: Monitor your assigned modules.</span>}
+            </p>
+        </div>
+
+        @if (User.IsInRole("Admin"))
+        {
+            <a href="@Url.Action("Create")" class="btn btn-create-new shadow-sm">
+                <i class="fas fa-plus-circle mr-2"></i> CREATE NEW COURSE
+            </a>
+        }
+    </div>
+
+    @* Table Section *@
+    <div class="table-container shadow">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th class="border-0">Course Name & Credits</th>
+                        <th class="border-0">Brief Description</th>
+                        <th class="border-0 text-center">Enrollment Limit</th>
+                        <th class="border-0 text-center">Management Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr class="course-row">
+                            <td class="pl-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-light rounded p-2 mr-3 text-primary">
+                                        <i class="fas fa-book-open"></i>
+                                    </div>
+                                    <div>
+                                        <span class="course-name-text font-weight-bold d-block">@item.CourseName</span>
+                                        <small class="text-primary font-weight-bold">@item.Credits Credits</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-muted small" style="max-width: 320px; vertical-align: middle;">
+                                @if (item.Description != null)
+                                {
+                                    @(item.Description.Length > 90 ? item.Description.Substring(0, 90) + "..." : item.Description)
+                                }
+                                else
+                                {
+                                    <span class="text-italic text-warning">No description available.</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <span class="limit-badge"><i class="fas fa-users mr-1 opacity-50"></i> @item.EnrollmentLimit</span>
+                            </td>
+                            <td class="text-center">
+                                <div class="d-flex justify-content-center align-items-center flex-wrap" style="gap: 5px;">
+
+                                    @* Base Actions *@
+                                    <a href="@Url.Action("Details", "Courses", new { id = item.CourseId })" class="action-btn btn-outline-info" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <a href="@Url.Action("Edit","Courses", new { id = item.CourseId })" class="action-btn btn-outline-primary" title="Edit Course">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="@Url.Action("Delete","Courses", new { id = item.CourseId })" class="action-btn btn-outline-danger" title="Delete Course">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+                                        <a href="@Url.Action("ManagePrerequisites", "Courses", new { id = item.CourseId })" class="btn btn-sm btn-warning rounded-pill px-3">
+                                            <i class="fas fa-list small"></i> Pre-reqs
+                                        </a>
+                                    }
+
+                                    @* Vertical Divider *@
+                                    <div style="width: 1px; height: 24px; background: #e2e8f0; margin: 0 8px;"></div>
+
+                                    @* Functional Buttons *@
+                                    <a href="@Url.Action("StudentList", "Enrollment", new { courseId = item.CourseId })" class="btn btn-role-action btn-students">
+                                        <i class="fas fa-user-graduate mr-1"></i> Students
+                                    </a>
+
+                                    @if (User.IsInRole("Lecturer"))
+                                    {
+                                        <a href="@Url.Action("ViewSubmissions", "Assignment", new { courseId = item.CourseId })" class="btn btn-role-action btn-submissions">
+                                            <i class="fas fa-file-import mr-1"></i> Marks
+                                        </a>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-search fa-3x text-light mb-3"></i>
+                <h5 class="text-muted font-weight-light">No courses found in the directory.</h5>
+            </div>
+        }
+    </div>
+</div>

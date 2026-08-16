@@ -1,0 +1,271 @@
+﻿@model IEnumerable<UniManage.Models.Enrollment>
+@using Microsoft.AspNet.Identity;
+
+@{
+    ViewBag.Title = "My Courses";
+}
+
+<div class="container" style="margin-top:30px; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+
+    @* Header Section *@
+    <div class="d-flex justify-content-between align-items-center mb-4 p-4 shadow-sm" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); border-radius: 15px;">
+        <div>
+            <h2 style="color: #ffffff; font-weight: 700; margin: 0;">My Enrolled Courses</h2>
+            <p style="color: #d1d9e6; margin: 5px 0 0 0;">Manage your academic progress and evaluations in one place.</p>
+        </div>
+        <div>
+            <a href="@Url.Action("AvailableCourses", "Enrollment")" class="btn btn-light shadow-sm" style="border-radius: 20px; padding: 10px 25px; font-weight: 600; color: #1e3c72;">
+                <i class="fas fa-plus-circle me-2"></i> New Enrollment
+            </a>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="card border-0 shadow-sm text-center py-5" style="border-radius: 15px; background-color: #f8f9fa;">
+            <div class="card-body">
+                <img src="https://cdn-icons-png.flaticon.com/512/7486/7486744.png" alt="No data" style="width: 100px; opacity: 0.3;" />
+                <h4 class="mt-4 text-muted">No courses found</h4>
+                <p class="text-muted">You haven't enrolled in any courses yet.</p>
+            </div>
+        </div>
+    }
+    else
+    {
+        foreach (var item in Model)
+        {
+            <div class="card mb-4 border-0 shadow-sm course-card" style="border-radius: 15px; overflow: hidden; background-color: #ffffff;">
+                <div class="row g-0">
+                    @* Left Sidebar - Course Info *@
+                    <div class="col-md-3 p-4 text-white d-flex flex-column justify-content-between" style="background: #2c3e50;">
+                        <div>
+                            <span class="badge mb-2" style="background-color: rgba(255,255,255,0.2);">ID: @item.CourseId</span>
+                            <h4 class="fw-bold mb-3" style="line-height: 1.2;">@item.Course.CourseName</h4>
+
+                            <div class="mt-4 p-3 rounded-3" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
+                                <small class="text-uppercase fw-bold d-block mb-1" style="font-size: 0.65rem; color: #aab7c4;">Lecturer</small>
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-2" style="width: 30px; height: 30px; font-size: 0.8rem;">
+                                        <i class="fas fa-user-tie"></i>
+                                    </div>
+                                    <span class="fw-bold" style="font-size: 0.9rem;">@(item.Course.User != null ? item.Course.User.UserName : "TBA")</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 text-center">
+                            <div class="final-grade-container mx-auto">
+                                @if (!string.IsNullOrEmpty(item.Grade) && item.Grade != "Pending")
+                                {
+                                    <div class="grade-value text-success">@item.Grade</div>
+                                }
+                                else
+                                {
+                                    <div class="grade-value text-muted" style="font-size: 1rem;">N/A</div>
+                                }
+                            </div>
+                            <small class="text-uppercase fw-bold" style="font-size: 0.65rem; color: #aab7c4; letter-spacing: 1px;">Overall Result</small>
+                        </div>
+                    </div>
+
+                    @* Right Content - Assignments *@
+                    <div class="col-md-9 p-4" style="background-color: #fdfdfd;">
+                        <h6 class="text-uppercase fw-bold text-muted mb-3" style="font-size: 0.75rem; letter-spacing: 1px;">Assignments & Progress</h6>
+
+                        <div class="row">
+                            @if (item.Course.Assignments != null && item.Course.Assignments.Any())
+                            {
+                                foreach (var assign in item.Course.Assignments)
+                                {
+                                    var currentUserId = User.Identity.GetUserId();
+                                    var userSubmission = assign.Submissions?.FirstOrDefault(s => s.StudentId == currentUserId);
+
+                                    <div class="col-12 mb-3">
+                                        <div class="assignment-item p-3 border rounded-3">
+                                            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="icon-box me-3">
+                                                        <i class="fas fa-file-alt text-secondary"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="fw-bold text-dark">@assign.Title</div>
+                                                        <small class="text-danger d-block" style="font-size: 0.75rem;">
+                                                            <i class="fas fa-calendar-alt"></i> Deadline: @assign.Deadline.ToString("MMM dd, yyyy")
+                                                        </small>
+                                                        @if (!string.IsNullOrEmpty(assign.FilePath))
+                                                        {
+                                                            <a href="~/Uploads/@assign.FilePath" target="_blank" class="small text-decoration-none text-primary fw-bold mt-1 d-inline-block">
+                                                                <i class="fas fa-download me-1"></i> Download Brief
+                                                            </a>
+                                                        }
+                                                    </div>
+                                                </div>
+
+                                                <div class="mt-3 mt-md-0 text-md-end">
+                                                    @if (userSubmission == null)
+                                                    {
+                                                        var finalDeadline = assign.Deadline.AddDays(10);
+                                                        var isClosed = DateTime.Now > finalDeadline;
+                                                        var isLatePeriod = DateTime.Now > assign.Deadline && DateTime.Now <= finalDeadline;
+
+                                                        if (isClosed)
+                                                        {
+                                                            @* --- Not Submitted & Closed --- *@
+                                                            <div class="mb-2">
+                                                                <small class="text-danger fw-bold d-block mb-1" style="font-size: 0.7rem;">
+                                                                    <i class="fas fa-exclamation-triangle me-1"></i> Assignment not submitted
+                                                                </small>
+                                                                <span class="badge bg-secondary px-3 py-2 rounded-pill shadow-sm">
+                                                                    <i class="fas fa-lock me-1"></i> Submission Closed
+                                                                </span>
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            if (isLatePeriod)
+                                                            {
+                                                                <div class="mb-1">
+                                                                    <span class="badge bg-warning text-dark border-0 shadow-sm" style="font-size: 0.7rem;">
+                                                                        <i class="fas fa-clock"></i> Late submission allowed
+                                                                    </span>
+                                                                </div>
+                                                            }
+                                                            <a href="@Url.Action("Create", "Submissions", new { assignmentId = assign.AssignmentId })"
+                                                               class="btn btn-sm btn-success px-4 rounded-pill fw-bold shadow-sm">
+                                                                Submit Now
+                                                            </a>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        @* --- Submitted Status --- *@
+                                                        var submittedLate = userSubmission.SubmittedDate > assign.Deadline;
+
+                                                        <div class="d-flex flex-column align-items-md-end">
+                                                            <small class="text-muted mb-1" style="font-size: 0.7rem;">
+                                                                Submitted: @userSubmission.SubmittedDate.ToString("MMM dd, HH:mm")
+                                                            </small>
+
+                                                            <div class="d-flex align-items-center gap-2">
+                                                                @if (submittedLate)
+                                                                {
+                                                                    <span class="badge bg-danger text-white" style="font-size: 0.7rem;">Late</span>
+                                                                }
+
+                                                                <div class="px-3 py-1 rounded-pill bg-soft-blue text-primary fw-bold border border-primary" style="font-size: 0.85rem;">
+                                                                    Grade: @(string.IsNullOrEmpty(userSubmission.Grade) ? "Pending" : userSubmission.Grade)
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+
+                                            @* --- LECTURER FEEDBACK SECTION --- *@
+                                            @if (userSubmission != null && !string.IsNullOrEmpty(userSubmission.Feedback))
+                                            {
+                                                <div class="mt-3 p-3 rounded-3 shadow-sm border-start border-4 border-info" style="background-color: #f0faff;">
+                                                    <div class="d-flex">
+                                                        <i class="fas fa-comment-dots text-info me-2 mt-1"></i>
+                                                        <div>
+                                                            <small class="fw-bold text-info text-uppercase d-block mb-1" style="font-size: 0.7rem;">Lecturer Feedback</small>
+                                                            <p class="mb-0 text-dark italic" style="font-size: 0.9rem;">"@userSubmission.Feedback"</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="col-12 text-center py-4 bg-light rounded-3">
+                                    <span class="text-muted italic small">No assignments available for this course.</span>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="mt-3 pt-3 border-top d-flex justify-content-end">
+                            <a href="@Url.Action("Details", "Courses", new { id = item.CourseId })" class="text-decoration-none fw-bold text-primary small">
+                                View Course Details <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@* Style & Scripts *@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+    body {
+        background-color: #f0f2f5;
+    }
+
+    .course-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+        }
+
+    .final-grade-container {
+        width: 70px;
+        height: 70px;
+        background: #ffffff;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+        margin-bottom: 8px;
+    }
+
+    .grade-value {
+        font-weight: 800;
+        font-size: 1.6rem;
+    }
+
+    .assignment-item {
+        background: #ffffff;
+        border-color: #edf2f7 !important;
+        transition: all 0.2s;
+    }
+
+        .assignment-item:hover {
+            background: #f8faff;
+            border-color: #3182ce !important;
+        }
+
+    .icon-box {
+        width: 40px;
+        height: 40px;
+        background: #edf2f7;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .bg-soft-blue {
+        background-color: #ebf8ff;
+    }
+
+    .italic {
+        font-style: italic;
+    }
+
+    .badge {
+        font-weight: 600;
+    }
+
+    .border-info {
+        border-left-color: #0dcaf0 !important;
+    }
+</style>

@@ -1,0 +1,22 @@
+﻿@model UniManage.Models.CourseMaterial
+
+<h2>Upload Course Material</h2>
+
+@* enctype = "multipart/form-data" යෙදීම අනිවාර්යයි *@
+@using (Html.BeginForm("Upload", "Materials", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.CourseId)
+
+    <div class="form-group">
+        <label>Material Title</label>
+        @Html.TextBoxFor(m => m.Title, new { @class = "form-control" })
+    </div>
+
+    <div class="form-group mt-3">
+        <label>Select File (PDF, Doc, etc.)</label>
+        <input type="file" name="uploadFile" class="form-control" required />
+    </div>
+
+    <button type="submit" class="btn btn-success mt-4">Upload Now</button>
+}

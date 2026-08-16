@@ -1,0 +1,101 @@
+﻿@model UniManage.Models.ApplicationUser
+
+@{
+    // Role IDs (ඔබේ Database එකේ ඇති IDs සමඟ මෙය සැසඳිය යුතුය)
+    var studentRoleId = "c420413f-edc9-48e1-b705-d63880c8c449";
+    var lecturerRoleId = "4fca5ead-790a-4a44-93d9-a59f9f459fac";
+
+    // දැනට Edit කරන User ගේ Role එක අනුව Header එක තීරණය කිරීම
+    string userType = "User"; // Default අගය
+
+    if (Model.Roles.Any(r => r.RoleId == studentRoleId))
+    {
+        userType = "Student";
+    }
+    else if (Model.Roles.Any(r => r.RoleId == lecturerRoleId))
+    {
+        userType = "Lecturer";
+    }
+
+    ViewBag.Title = "Edit " + userType + " Details";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow border-0">
+                <div class="card-header @(userType == "Lecturer" ? "bg-info text-dark" : "bg-primary text-white")">
+                    <h4 class="mb-0">
+                        <i class="fas @(userType == "Lecturer" ? "fa-chalkboard-teacher" : "fa-user-edit") me-2"></i>
+                        Edit @userType Profile
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    @using (Html.BeginForm())
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(model => model.Id)
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">User Name</label>
+                            @Html.EditorFor(model => model.UserName, new { htmlAttributes = new { @class = "form-control", placeholder = "Enter name" } })
+                            @Html.ValidationMessageFor(model => model.UserName, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Email Address</label>
+                            @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", placeholder = "Enter email" } })
+                            @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-success fw-bold shadow-sm">
+                                <i class="fas fa-save me-1"></i> Save Changes
+                            </button>
+                            <a href="@Url.Action("ManageUsers", "Account")" class="btn btn-outline-secondary">
+                                Cancel
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            @if (userType == "Lecturer")
+            {
+                <div class="text-center mt-3">
+                    <small class="text-muted"><i class="fas fa-info-circle"></i> Updating faculty credentials will reflect in the staff directory.</small>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 15px;
+        overflow: hidden;
+    }
+
+    .card-header {
+        font-weight: bold;
+        border-bottom: 0;
+        padding: 1.2rem;
+    }
+
+    .btn {
+        border-radius: 10px;
+        padding: 10px;
+        transition: 0.3s;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        padding: 12px;
+        border: 1px solid #dee2e6;
+    }
+
+        .form-control:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+        }
+</style>

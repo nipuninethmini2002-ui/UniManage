@@ -1,0 +1,160 @@
+﻿@model UniManage.Models.Course
+
+@{
+    ViewBag.Title = "Create New Course";
+}
+
+<style>
+    /* Header section with Navy Blue gradient */
+    .create-header {
+        background: linear-gradient(135deg, #1a2a6c, #2a4858);
+        color: white;
+        padding: 50px 20px;
+        border-radius: 20px;
+        margin-bottom: -60px; /* Card එක Header එක උඩට එන ලෙස */
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Form Card styling */
+    .form-card {
+        background: white;
+        border-radius: 25px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        padding: 80px 50px 50px 50px; /* Header එක නිසා ඉහළින් වැඩි ඉඩක් */
+        position: relative;
+        z-index: 2;
+        border: none;
+    }
+
+    /* Input field customization */
+    .form-control-custom {
+        border-radius: 12px;
+        padding: 14px;
+        border: 1px solid #dee2e6;
+        transition: 0.3s;
+        background-color: #f8f9fa;
+        height: auto; /* Dropdown එකේ පෙනුම නිවැරදි කිරීමට */
+    }
+
+        .form-control-custom:focus {
+            background-color: #fff;
+            border-color: #1a2a6c;
+            box-shadow: 0 0 0 0.2rem rgba(26, 42, 108, 0.1);
+        }
+
+    .input-label {
+        font-weight: 700;
+        color: #2d3436;
+        margin-bottom: 10px;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+    }
+
+    /* Save button styling */
+    .btn-save {
+        background: linear-gradient(to right, #1a2a6c, #2a4858);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 15px 45px;
+        font-weight: bold;
+        transition: 0.3s;
+        letter-spacing: 1px;
+    }
+
+        .btn-save:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(26, 42, 108, 0.3);
+            color: white;
+        }
+
+    .btn-back {
+        color: #636e72;
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.3s;
+    }
+
+        .btn-back:hover {
+            color: #1a2a6c;
+            text-decoration: none;
+        }
+
+    .asterisk {
+        color: #e74c3c;
+    }
+</style>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+
+            <div class="create-header text-center shadow-lg">
+                <i class="fas fa-plus-circle fa-3x mb-3 text-warning"></i>
+                <h2 class="font-weight-bold">Register New Course</h2>
+                <p class="opacity-75">Please provide the necessary details to add a new module to the university catalog.</p>
+            </div>
+
+            <div class="form-card">
+                @using (Html.BeginForm())
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true, "", new { @class = "alert alert-danger small" })
+
+                    <div class="row">
+                        <div class="col-md-12 mb-4">
+                            <label class="input-label">Course Name <span class="asterisk">*</span></label>
+                            @Html.EditorFor(model => model.CourseName, new { htmlAttributes = new { @class = "form-control form-control-custom", placeholder = "e.g., Introduction to Computer Science" } })
+                            @Html.ValidationMessageFor(model => model.CourseName, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="col-md-12 mb-4">
+                            <label class="input-label">Course Description <span class="asterisk">*</span></label>
+                            @Html.TextAreaFor(model => model.Description, new { @class = "form-control form-control-custom", rows = "5", placeholder = "Describe what students will learn in this course..." })
+                            @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            <label class="input-label">Enrollment Limit <span class="asterisk">*</span></label>
+                            @Html.EditorFor(model => model.EnrollmentLimit, new { htmlAttributes = new { @class = "form-control form-control-custom", type = "number", min = "1", placeholder = "e.g., 50" } })
+                            @Html.ValidationMessageFor(model => model.EnrollmentLimit, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            <label class="input-label">Credits <span class="asterisk">*</span></label>
+                            @Html.EditorFor(model => model.Credits, new { htmlAttributes = new { @class = "form-control form-control-custom", placeholder = "Enter Credits (1-5)" } })
+                            @Html.ValidationMessageFor(model => model.Credits, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="col-md-12 mb-4">
+                            <label class="input-label">Assign Lecturer <span class="asterisk">*</span></label>
+                            @* ViewBag.UserId හරහා Controller එකෙන් එන දත්ත මෙහි Dropdown එක ලෙස පෙන්වයි *@
+                            @Html.DropDownList("UserId", null, "-- Select Lecturer --", htmlAttributes: new { @class = "form-control form-control-custom" })
+                            @Html.ValidationMessageFor(model => model.UserId, "", new { @class = "text-danger small" })
+                        </div>
+                    </div>
+
+                    <hr class="my-5" />
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="@Url.Action("Index")" class="btn-back">
+                            <i class="fas fa-chevron-left mr-2"></i> Return to Course List
+                        </a>
+                        <button type="submit" class="btn btn-save shadow">
+                            <i class="fas fa-save mr-2"></i> CREATE COURSE
+                        </button>
+                    </div>
+                }
+            </div>
+
+            <p class="text-center mt-4 text-muted small">
+                UniManage &copy; @DateTime.Now.Year - Administrative Portal
+            </p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,74 @@
+﻿@model IEnumerable<UniManage.Models.Assignment>
+
+@{
+    ViewBag.Title = "Student Submissions";
+}
+
+<div class="container" style="margin-top:40px; font-family: 'Segoe UI', sans-serif;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 style="color: #2c3e50; font-weight: 700;">Submissions</h2>
+            <p class="text-muted">Review student work for this assignment</p>
+        </div>
+        <a href="@Url.Action("Index", "Assignments")" class="btn btn-outline-secondary shadow-sm" style="border-radius: 8px;">
+            <i class="fas fa-arrow-left me-1"></i> Back
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0" style="border-radius: 15px; overflow: hidden;">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead style="background-color: #f8f9fa; color: #495057;">
+                    <tr>
+                        <th class="ps-4 py-3">Student ID</th>
+                        <th class="py-3">Status</th>
+                        <th class="py-3 text-center">Submission Date</th>
+                        <th class="py-3 text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model == null || !Model.Any())
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center py-5">
+                                <p class="text-muted">No assignments submitted yet.</p>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="ps-4 py-3 align-middle">
+                                    <span class="fw-bold">@item.StudentId</span>
+                                </td>
+                                <td class="py-3 align-middle">
+                                    <span class="badge bg-success" style="border-radius: 20px;">Received</span>
+                                </td>
+                                <td class="py-3 align-middle text-center text-muted">
+                                    @* ToString Error එක එන තැන මෙතනින් හැදුවා *@
+                                    @item.SubmittedDate.ToString()
+                                </td>
+                                <td class="py-3 align-middle text-center">
+                                    @if (!string.IsNullOrEmpty(item.FilePath))
+                                    {
+                                        <a href="@Url.Content("~/App_Data/Uploads/" + item.FilePath)" download="@item.FilePath" class="btn btn-primary btn-sm shadow-sm" style="border-radius: 8px;">
+                                            <i class="fas fa-download me-1"></i> Download
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">No file</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">

@@ -1,0 +1,90 @@
+﻿@model UniManage.Models.Course
+
+@{
+    ViewBag.Title = "Course Details";
+}
+
+@* Font Awesome Icons *@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+
+            @if (Model == null)
+            {
+                <div class="alert alert-danger shadow-sm" style="border-radius: 15px;">
+                    <i class="fas fa-exclamation-circle me-2"></i> <strong>Error:</strong> Course details could not be found. Please return to the list.
+                    <br /><br />
+                    <a href="@Url.Action("Index", "Courses")" class="btn btn-danger btn-sm rounded-pill">Back to Courses</a>
+                </div>
+            }
+            else
+            {
+                <div class="card shadow-lg border-0" style="border-radius: 20px; overflow: hidden;">
+
+                    @* Header - Gradient Styling *@
+                    <div class="card-header text-white p-4" style="background: linear-gradient(135deg, #1a2a6c 0%, #2a4858 100%);">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h3 class="mb-0 fw-bold"><i class="fas fa-info-circle me-2"></i> Course Information</h3>
+                            <span class="badge bg-light text-primary px-3 py-2 rounded-pill shadow-sm">ID: #@Model.CourseId</span>
+                        </div>
+                    </div>
+
+                    @* Body Content *@
+                    <div class="card-body p-5 bg-white">
+                        <div class="row mb-4">
+                            <div class="col-sm-4 text-muted fw-bold text-uppercase small">Course Name</div>
+                            <div class="col-sm-8 h5 fw-bold text-dark">@Model.CourseName</div>
+                        </div>
+                        <hr class="opacity-50">
+
+                        <div class="row mb-4 text-break">
+                            <div class="col-sm-4 text-muted fw-bold text-uppercase small">Description</div>
+                            <div class="col-sm-8 text-secondary" style="line-height: 1.6;">
+                                @(string.IsNullOrEmpty(Model.Description) ? "No description available for this course." : Model.Description)
+                            </div>
+                        </div>
+                        <hr class="opacity-50">
+
+                        <div class="row mb-4">
+                            <div class="col-sm-4 text-muted fw-bold text-uppercase small">Student Limit</div>
+                            <div class="col-sm-8">
+                                <span class="badge bg-soft-success text-success px-4 py-2 rounded-pill" style="background-color: #e8f5e9; border: 1px solid #c8e6c9; font-weight: 600;">
+                                    <i class="fas fa-users me-2"></i> @Model.EnrollmentLimit Students Max
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    @* Footer Actions *@
+                    <div class="card-footer bg-light p-4 d-flex justify-content-end gap-2 border-0">
+
+                        @* Student කෙනෙක් නෙවෙයි නම් විතරක් Back to List පෙන්වන්න *@
+                        @if (!User.IsInRole("Student"))
+                        {
+                            <a href="@Url.Action("Index", "Courses")" class="btn btn-outline-secondary px-4 rounded-pill">
+                                <i class="fas fa-arrow-left me-1"></i> Back to List
+                            </a>
+                        }
+                        else
+                        {
+                            @* Student කෙනෙක්ට Home එකට යාමට බටන් එක *@
+                            <a href="@Url.Content("~/")" class="btn btn-outline-primary px-4 rounded-pill">
+                                <i class="fas fa-home me-1"></i> Home
+                            </a>
+                        }
+
+                        @* Admin කෙනෙක් නම් විතරක් Edit බටන් එක පෙන්වන්න *@
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a href="@Url.Action("Edit", "Courses", new { id = Model.CourseId })" class="btn btn-warning px-4 rounded-pill text-white fw-bold shadow-sm">
+                                <i class="fas fa-edit me-1"></i> Edit Course
+                            </a>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

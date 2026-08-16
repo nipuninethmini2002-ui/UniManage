@@ -1,0 +1,34 @@
+﻿@model UniManage.Models.Submission
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0" style="border-radius: 20px;">
+                <div class="card-header bg-success text-white text-center p-4">
+                    <h3>Submit Your Assignment</h3>
+                    <p class="mb-0">Assignment: <strong>@ViewBag.AssignmentTitle</strong></p>
+                </div>
+                <div class="card-body p-4">
+                    @using (Html.BeginForm("Create", "Submissions", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="AssignmentId" value="@ViewBag.AssignmentId" />
+
+                        <div class="mb-4 text-center">
+                            <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                            <label class="form-label d-block">Select your answer file (PDF, Word, or Zip)</label>
+                            <input type="file" name="uploadFile" class="form-control" required />
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg shadow-sm" style="border-radius: 10px;">
+                                <i class="fas fa-paper-plane me-2"></i> Submit Now
+                            </button>
+                            <a href="@Url.Action("MyCourses", "Enrollment")" class="btn btn-link text-muted">Cancel</a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,161 @@
+﻿@model IEnumerable<UniManage.Models.Enrollment>
+
+@{
+    ViewBag.Title = "Student Enrollment List";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-primary fw-bold"><i class="fas fa-graduation-cap me-2"></i> Enrolled Students</h2>
+            <p class="text-muted">
+                Course: <strong>@(Model.FirstOrDefault()?.Course.CourseName ?? "No Records Found")</strong>
+            </p>
+        </div>
+    </div>
+
+    @if (User.IsInRole("Admin"))
+    {
+        <div class="card mb-4 border-warning shadow-sm">
+            <div class="card-header bg-warning text-dark fw-bold small">
+                <i class="fas fa-user-shield me-2"></i> ADMIN OVERRIDE: SELECT & ENROLL STUDENT
+            </div>
+            <div class="card-body py-3">
+                @using (Html.BeginForm("ManualEnroll", "Enrollment", FormMethod.Post, new { @class = "row g-2 align-items-end" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="courseId" value="@ViewBag.CourseId" />
+
+                    <div class="col-md-9">
+                        <label class="form-label small fw-bold text-muted">Select Student User Name</label>
+                        @Html.DropDownList("studentId", (SelectList)ViewBag.StudentList, "-- Select Student --", new { @class = "form-control" })
+                    </div>
+
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-warning btn-sm w-100 fw-bold shadow-sm">
+                            <i class="fas fa-plus-circle me-1"></i> Force Enroll
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <div class="card shadow-sm border-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th class="ps-4" style="width: 30%;">Student Info</th>
+                        <th class="text-center" style="width: 35%;">Full User ID</th>
+                        <th class="text-center" style="width: 35%;">Grade Management</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="3" class="text-center py-5 text-muted font-italic">
+                                <i class="fas fa-user-slash fa-2x mb-2 d-block"></i> No students found.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3 shadow-sm" style="width: 42px; height: 42px; font-weight: bold; flex-shrink: 0;">
+                                            @if (item.Student != null && !string.IsNullOrEmpty(item.Student.UserName))
+                                            {
+                                                @item.Student.UserName.Substring(0, 1).ToUpper()
+                                            }
+                                            else
+                                            {
+                                                <span>U</span>
+                                            }
+                                        </div>
+                                        <div>
+                                            <span class="fw-bold text-dark d-block">
+                                                @(item.Student != null ? item.Student.UserName : "Unknown Student")
+                                            </span>
+                                            <small class="text-muted"><i class="far fa-calendar-alt me-1"></i>Enrolled: @item.EnrollmentDate.ToString("f")</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-light text-dark border font-monospace p-2" style="font-size: 0.75rem;">
+                                        @item.StudentId
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    @if (User.IsInRole("Lecturer"))
+                                    {
+                                        @* Lecturer හට පමණක් පෙනෙන Update Form එක *@
+                                        using (Html.BeginForm("UpdateGrade", "Enrollment", FormMethod.Post, new { @class = "d-flex justify-content-center gap-2" }))
+                                        {
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="enrollmentId" value="@item.EnrollmentId" />
+                                            <select name="grade" class="form-select form-select-sm" style="width: 100px;">
+                                                <option value="Pending" @(item.Grade == "Pending" ? "selected" : "")>Pending</option>
+                                                <option value="A" @(item.Grade == "A" ? "selected" : "")>A</option>
+                                                <option value="B" @(item.Grade == "B" ? "selected" : "")>B</option>
+                                                <option value="C" @(item.Grade == "C" ? "selected" : "")>C</option>
+                                                <option value="F" @(item.Grade == "F" ? "selected" : "")>F</option>
+                                            </select>
+                                            <button type="submit" class="btn btn-sm btn-primary shadow-sm" title="Update Grade">
+                                                <i class="fas fa-save"></i>
+                                            </button>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        @* Admin හෝ වෙනත් අයෙකුට පෙනෙන සාමාන්‍ය Badge එක *@
+                                        var badgeClass = "bg-secondary";
+                                        var gradeValue = item.Grade ?? "Pending";
+                                        if (gradeValue == "A") { badgeClass = "bg-success"; }
+                                        else if (gradeValue == "F") { badgeClass = "bg-danger"; }
+                                        else if (gradeValue != "Pending") { badgeClass = "bg-info text-dark"; }
+
+                                        <span class="badge @badgeClass shadow-sm" style="min-width: 65px; padding: 10px;">
+                                            @gradeValue
+                                        </span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .table thead th {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 15px;
+    }
+
+    .badge {
+        font-size: 0.85rem;
+        border-radius: 6px;
+    }
+
+    .card {
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .form-select-sm {
+        border-radius: 8px;
+    }
+
+    .font-monospace {
+        font-family: 'Courier New', Courier, monospace;
+    }
+</style>

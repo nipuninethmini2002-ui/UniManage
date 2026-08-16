@@ -1,0 +1,266 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - UniManage</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+
+    <style>
+        /* 🎨 Main Navbar Styling */
+        .navbar {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%) !important;
+            padding: 12px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-bottom: 2px solid #f39c12;
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+            color: #f39c12 !important;
+            text-transform: uppercase;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.8) !important;
+            font-weight: 500;
+            margin: 0 5px;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            padding: 8px 15px !important;
+        }
+
+        .nav-link:hover {
+            color: #ffffff !important;
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-2px);
+        }
+
+        /* ✨ Active Page Styling */
+        .active-link {
+            color: #ffffff !important;
+            background: rgba(255,255,255,0.2);
+            font-weight: bold;
+            box-shadow: inset 0 -2px 0 #f39c12;
+        }
+
+        /* 🔔 Unread Message Badge */
+        .unread-badge {
+            background: #f39c12;
+            color: #1e3c72;
+            font-size: 10px;
+            font-weight: 900;
+            padding: 2px 6px;
+            border-radius: 50px;
+            margin-left: 5px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @@keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(243, 156, 18, 0.7); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(243, 156, 18, 0); }
+            100% { transform: scale(1); }
+        }
+
+        /* 📍 Advanced Footer Styling */
+        .main-footer {
+            background: #1a1a1a;
+            color: #bbb;
+            padding: 60px 0 20px;
+            margin-top: 50px;
+            border-top: 4px solid #f39c12;
+        }
+
+        .footer-title {
+            color: #fff;
+            font-weight: 700;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .footer-title::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -8px;
+            width: 40px;
+            height: 2px;
+            background: #f39c12;
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: #bbb;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: #f39c12;
+            padding-left: 8px;
+        }
+
+        .social-icons a {
+            width: 35px;
+            height: 35px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border-radius: 50%;
+            margin-right: 10px;
+            transition: 0.3s;
+        }
+
+        .social-icons a:hover {
+            background: #f39c12;
+            transform: translateY(-3px);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 20px;
+            margin-top: 40px;
+            font-size: 0.9rem;
+        }
+
+        .body-content {
+            margin-top: 30px;
+            min-height: 80vh;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-sm navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="@Url.Action("Index", "Home")">
+                <i class="fas fa-university me-2"></i>UniManage
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav flex-grow-1">
+                    <li><a class="nav-link" href="@Url.Action("Index", "Home")"><i class="fas fa-home"></i> Home</a></li>
+
+                    @if (Request.IsAuthenticated)
+                    {
+                        if (User.IsInRole("Admin"))
+                        {
+                            <li><a class="nav-link" href="/Courses/Index"><i class="fas fa-tasks"></i> Manage Courses</a></li>
+                            <li><a class="nav-link" href="/Courses/Reports"><i class="fas fa-chart-line"></i> Reports</a></li>
+                            <li><a class="nav-link" href="/Account/ManageUsers"><i class="fas fa-chart-line"></i> Manage Users</a></li>
+                            <li>
+                                <a class="nav-link" href="/Messages/AllMessages">
+                                    <i class="fas fa-paper-plane"></i> Send Messages
+                                    @{ var adminCount = Html.Action("GetUnreadCount", "Messages").ToString(); }
+                                    @if (adminCount != "0")
+                                    {<span class="unread-badge">@adminCount</span>}
+                                </a>
+                            </li>
+                        }
+                        if (User.IsInRole("Lecturer"))
+                        {
+                            <li><a class="nav-link" href="/Assignments"><i class="fas fa-edit"></i> Assignments</a></li>
+                            <li><a class="nav-link" href="/Materials"><i class="fas fa-folder-open"></i> Materials</a></li>
+                        }
+                        if (User.IsInRole("Student"))
+                        {
+                            <li><a class="nav-link" href="/Enrollment/MyCourses"><i class="fas fa-user-graduate"></i> My Progress</a></li>
+                            <li><a class="nav-link" href="/Materials"><i class="fas fa-book"></i> Materials</a></li>
+                        }
+
+                        <li>
+                            <a class="nav-link" href="/Messages/Inbox">
+                                <i class="fas fa-envelope"></i> Inbox
+                                @{ var count = Html.Action("GetUnreadCount", "Messages").ToString(); }
+                                @if (count != "0")
+                                {<span class="unread-badge">@count</span>}
+                            </a>
+                        </li>
+                    }
+                    <li><a class="nav-link" href="@Url.Action("About", "Home")"><i class="fas fa-info-circle"></i> About</a></li>
+                </ul>
+
+                <div class="ms-auto">
+                    @Html.Partial("_LoginPartial")
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container body-content">
+        @RenderBody()
+    </div>
+
+    <footer class="main-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5 class="footer-title">UniManage</h5>
+                    <p>A comprehensive University Information System designed to bridge the gap between students, lecturers, and administrators.</p>
+                    <div class="social-icons mt-3">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-4">
+                    <h5 class="footer-title">Quick Links</h5>
+                    <ul class="footer-links">
+                        <li><a href="@Url.Action("Index", "Home")">Home</a></li>
+                        <li><a href="@Url.Action("About", "Home")">About University</a></li>
+                        <li><a href="/Courses/Index">Available Courses</a></li>
+                        <li><a href="@Url.Action("Contact", "Home")">Support Center</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-md-4 mb-4">
+                    <h5 class="footer-title">Contact Us</h5>
+                    <p><i class="fas fa-map-marker-alt me-2 text-warning"></i> 123 University Road, Colombo, Sri Lanka</p>
+                    <p><i class="fas fa-phone-alt me-2 text-warning"></i> +94 11 234 5678</p>
+                    <p><i class="fas fa-envelope me-2 text-warning"></i> support@unimanage.edu</p>
+                </div>
+            </div>
+
+            <div class="footer-bottom text-center">
+                <p>&copy; @DateTime.Now.Year <span class="text-white fw-bold">UniManage</span>. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+
+    <script>
+        $(document).ready(function () {
+            var currentUrl = window.location.pathname.toLowerCase();
+            $('.navbar-nav li a').each(function () {
+                var linkUrl = $(this).attr('href').toLowerCase();
+                if ((currentUrl === "/" || currentUrl === "/home/index") && (linkUrl === "/" || linkUrl.indexOf("home/index") !== -1)) {
+                    $(this).addClass('active-link');
+                } else if (currentUrl === linkUrl) {
+                    $(this).addClass('active-link');
+                }
+            });
+        });
+    </script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,141 @@
+﻿@{
+    ViewBag.Title = "Contact UniManage";
+}
+
+<style>
+    /* Hero Header - Matching About Page */
+    .contact-hero {
+        background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+        color: white;
+        padding: 80px 0;
+        text-align: center;
+        border-radius: 0 0 50px 50px;
+    }
+
+    .contact-card {
+        background: #ffffff;
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+        margin-top: -50px; /* Hero එක උඩට පොඩ්ඩක් එන විදිහට */
+        padding: 40px;
+        z-index: 10;
+        position: relative;
+    }
+
+    .info-box {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+        transition: 0.3s;
+        border-left: 5px solid #1a2a6c;
+    }
+
+    .info-box:hover {
+        background: #eef2f7;
+        transform: scale(1.02);
+    }
+
+    .icon-style {
+        font-size: 1.5rem;
+        color: #f39c12;
+        margin-right: 15px;
+    }
+
+    .form-control-custom {
+        border-radius: 10px;
+        padding: 12px;
+        border: 1px solid #e0e0e0;
+        margin-bottom: 20px;
+    }
+
+    .btn-send {
+        background: linear-gradient(to right, #1a2a6c, #2a4858);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 50px;
+        font-weight: bold;
+        transition: 0.4s;
+        width: 100%;
+    }
+
+    .btn-send:hover {
+        box-shadow: 0 10px 20px rgba(26, 42, 108, 0.3);
+        transform: translateY(-2px);
+        color: white;
+    }
+</style>
+
+<div class="contact-hero text-center">
+    <div class="container">
+        <h1 class="display-4 font-weight-bold">Get In Touch</h1>
+        <p class="lead">We are here to help you. Reach out to us for any inquiries.</p>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-11">
+            <div class="contact-card">
+                <div class="row">
+                    <div class="col-md-5 pr-md-5">
+                        <h3 class="font-weight-bold mb-4">Contact Information</h3>
+                        
+                        <div class="info-box d-flex align-items-center">
+                            <i class="fas fa-map-marker-alt icon-style"></i>
+                            <div>
+                                <h6 class="mb-0 font-weight-bold">Campus Address</h6>
+                                <p class="mb-0 text-muted">123 University Ave, Colombo 07, Sri Lanka</p>
+                            </div>
+                        </div>
+
+                        <div class="info-box d-flex align-items-center">
+                            <i class="fas fa-phone-alt icon-style"></i>
+                            <div>
+                                <h6 class="mb-0 font-weight-bold">Phone Number</h6>
+                                <p class="mb-0 text-muted">+94 112 555 000</p>
+                            </div>
+                        </div>
+
+                        <div class="info-box d-flex align-items-center">
+                            <i class="fas fa-envelope icon-style"></i>
+                            <div>
+                                <h6 class="mb-0 font-weight-bold">Email Support</h6>
+                                <p class="mb-0 text-muted">support@unimanage.edu</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <h5 class="font-weight-bold mb-3">Follow Our Journey</h5>
+                            <div class="d-flex gap-3">
+                                <a href="#" class="btn btn-outline-primary btn-sm rounded-circle mr-2"><i class="fab fa-facebook-f"></i></a>
+                                <a href="#" class="btn btn-outline-info btn-sm rounded-circle mr-2"><i class="fab fa-twitter"></i></a>
+                                <a href="#" class="btn btn-outline-danger btn-sm rounded-circle"><i class="fab fa-instagram"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-7 mt-5 mt-md-0">
+                        <h3 class="font-weight-bold mb-4">Send us a Message</h3>
+                        <form action="/Home/Contact" method="post">
+                            @Html.AntiForgeryToken()  <div class="row">
+                                <div class="col-md-6">
+                                    <input type="text" name="name" class="form-control form-control-custom" placeholder="Your Name" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="email" name="email" class="form-control form-control-custom" placeholder="Your Email" required>
+                                </div>
+                            </div>
+                            <input type="text" name="subject" class="form-control form-control-custom" placeholder="Subject">
+                            <textarea name="message" class="form-control form-control-custom" rows="5" placeholder="How can we help you?"></textarea>
+
+                            <button type="submit" class="btn btn-send">SEND MESSAGE</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

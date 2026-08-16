@@ -1,0 +1,288 @@
+﻿@{
+    ViewBag.Title = "UniManage | Premier Learning Management System";
+}
+
+<style>
+    /* 🌊 Hero Section with Theme Colors */
+    .hero-section {
+        background: linear-gradient(rgba(30, 60, 114, 0.85), rgba(42, 82, 152, 0.85)), url('https://images.unsplash.com/photo-1523050853063-bd8012fbb746?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        color: white;
+        padding: 120px 0;
+        border-radius: 0 0 80px 80px;
+        margin-bottom: 50px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    /* 📊 Stat Cards with Theme Matching */
+    .stat-card {
+        border: none;
+        border-radius: 20px;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        background: #ffffff;
+        border-bottom: 5px solid transparent;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border-bottom: 5px solid #f39c12; /* Theme Orange */
+        }
+
+    /* 🏢 Dashboard Portal Cards */
+    .portal-card {
+        border-radius: 30px;
+        padding: 50px;
+        color: white;
+        min-height: 350px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        border: none;
+    }
+
+    .admin-gradient {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    }
+
+    .lecturer-gradient {
+        background: linear-gradient(135deg, #2c3e50 0%, #4ca1af 100%);
+    }
+
+    .student-gradient {
+        background: linear-gradient(135deg, #1e3c72 0%, #f39c12 100%);
+    }
+
+    /* 🔘 Action Buttons */
+    .btn-theme {
+        background: #f39c12;
+        color: white;
+        font-weight: bold;
+        border-radius: 30px;
+        padding: 12px 35px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border: none;
+        transition: 0.3s;
+    }
+
+        .btn-theme:hover {
+            background: #e67e22;
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(243, 156, 18, 0.4);
+        }
+
+    .btn-white {
+        background: white;
+        color: #1e3c72;
+        font-weight: bold;
+        border-radius: 30px;
+        padding: 12px 30px;
+        transition: 0.3s;
+        border: none;
+    }
+
+        .btn-white:hover {
+            background: #f8f9fa;
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255,255,255,0.3);
+        }
+
+    .section-title {
+        color: #1e3c72;
+        font-weight: 800;
+        position: relative;
+        padding-bottom: 15px;
+    }
+
+        .section-title::after {
+            content: '';
+            width: 60px;
+            height: 4px;
+            background: #f39c12;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+    /* 📅 Announcement Styling */
+    .announcement-box {
+        background: white;
+        border-left: 5px solid #1e3c72;
+        transition: 0.3s;
+    }
+
+        .announcement-box:hover {
+            background: #f8f9fa;
+            transform: translateX(10px);
+        }
+</style>
+
+<section class="hero-section text-center">
+    <div class="container">
+        <h1 class="display-2 fw-bold animate__animated animate__fadeInDown">UniManage</h1>
+        <p class="lead fs-3 mb-4">Empowering Education, Managing Success.</p>
+        @if (!Request.IsAuthenticated)
+        {
+            <a href="@Url.Action("Login", "Account")" class="btn btn-lg btn-theme shadow">
+                <i class="fas fa-sign-in-alt me-2"></i> Get Started
+            </a>
+        }
+    </div>
+</section>
+
+<div class="container mb-5">
+    <div class="row">
+        @if (Request.IsAuthenticated)
+        {
+            if (User.IsInRole("Admin"))
+            {
+                <div class="col-md-12 mb-5">
+                    <h2 class="text-center section-title mb-5">System Intelligence</h2>
+                    <div class="row mt-4">
+                        <div class="col-md-4 mb-4">
+                            <div class="card stat-card text-center p-5 shadow-sm">
+                                <i class="fas fa-book fa-3x text-primary mb-3"></i>
+                                <h2 class="fw-bold">@ViewBag.CourseCount</h2>
+                                <p class="text-muted text-uppercase fw-bold">Active Courses</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="card stat-card text-center p-5 shadow-sm">
+                                <i class="fas fa-users fa-3x text-success mb-3"></i>
+                                <h2 class="fw-bold">@ViewBag.StudentCount</h2>
+                                <p class="text-muted text-uppercase fw-bold">Total Students</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="card stat-card text-center p-5 shadow-sm">
+                                <i class="fas fa-user-tie fa-3x text-warning mb-3"></i>
+                                <h2 class="fw-bold">@ViewBag.LecturerCount</h2>
+                                <p class="text-muted text-uppercase fw-bold">Expert Faculty</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center mt-4">
+                        <a href="@Url.Action("Index", "Courses")" class="btn btn-theme px-5 shadow">
+                            Manage Administrative Hub <i class="fas fa-arrow-right ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+            }
+            else if (User.IsInRole("Lecturer"))
+            {
+                <div class="col-md-10 mx-auto">
+                    <div class="portal-card lecturer-gradient text-center shadow-lg">
+                        <i class="fas fa-chalkboard-teacher fa-4x mb-4"></i>
+                        <h1 class="fw-bold mb-3">Faculty Dashboard</h1>
+                        <p class="fs-5 opacity-75 mb-4">Welcome, Professor! Manage your academic portfolio, track assignments, and engage with your students.</p>
+                        <div class="d-flex justify-content-center flex-wrap gap-3">
+                            <a href="@Url.Action("Index", "Assignments")" class="btn btn-white shadow-sm"><i class="fas fa-tasks me-2"></i>Assignments</a>
+                            <a href="@Url.Action("Index", "Courses")" class="btn btn-white shadow-sm"><i class="fas fa-graduation-cap me-2"></i>My Courses</a>
+                        </div>
+                    </div>
+                </div>
+            }
+            else if (User.IsInRole("Student"))
+            {
+                <div class="col-md-10 mx-auto">
+                    <div class="portal-card student-gradient text-center shadow-lg">
+                        <i class="fas fa-user-graduate fa-4x mb-4"></i>
+                        <h1 class="fw-bold mb-3">Student Excellence Hub</h1>
+                        <p class="fs-5 opacity-75 mb-4">Ready to learn? Access your courses, download materials, and keep track of your academic journey.</p>
+                        <div class="d-flex justify-content-center flex-wrap gap-3">
+                            <a href="@Url.Action("AvailableCourses", "Enrollment")" class="btn btn-white shadow-sm"><i class="fas fa-search me-2"></i>Browse Courses</a>
+                            <a href="@Url.Action("MyCourses", "Enrollment")" class="btn btn-white shadow-sm"><i class="fas fa-chart-line me-2"></i>My Enrollments</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-md-12 text-center my-5">
+                <h2 class="section-title mb-5">Why UniManage?</h2>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="p-4">
+                            <i class="fas fa-laptop-code fa-3x text-primary mb-3"></i>
+                            <h4 class="fw-bold">Smart Learning</h4>
+                            <p class="text-muted">A modern interface for a superior educational experience across all your devices.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-4">
+                            <i class="fas fa-shield-alt fa-3x text-primary mb-3"></i>
+                            <h4 class="fw-bold">Secure Data</h4>
+                            <p class="text-muted">High-end encryption ensuring student and institutional data stays safe and private.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-4">
+                            <i class="fas fa-comments fa-3x text-primary mb-3"></i>
+                            <h4 class="fw-bold">Real-time Messaging</h4>
+                            <p class="text-muted">Bridge the gap between faculty and students with integrated notifications.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12 bg-light rounded-pill p-5 my-5 shadow-sm text-center">
+                <div class="row">
+                    <div class="col-md-3">
+                        <h2 class="fw-bold text-primary">98%</h2>
+                        <p class="text-muted fw-bold">Satisfaction</p>
+                    </div>
+                    <div class="col-md-3">
+                        <h2 class="fw-bold text-primary">24/7</h2>
+                        <p class="text-muted fw-bold">Support</p>
+                    </div>
+                    <div class="col-md-3">
+                        <h2 class="fw-bold text-primary">50+</h2>
+                        <p class="text-muted fw-bold">Courses</p>
+                    </div>
+                    <div class="col-md-3">
+                        <h2 class="fw-bold text-primary">100%</h2>
+                        <p class="text-muted fw-bold">Digital</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12 my-5">
+                <h2 class="section-title text-center mb-5">Latest Campus Updates</h2>
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="announcement-box p-4 rounded shadow-sm d-flex align-items-center">
+                            <div class="me-4 text-center border-end pe-4">
+                                <span class="d-block text-uppercase text-primary fw-bold">@DateTime.Now.ToString("MMM")</span>
+                                <span class="display-6 fw-bold">@DateTime.Now.AddDays(3).Day</span>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold mb-1">Convocation 2026</h5>
+                                <p class="text-muted mb-0">Registrations are now open for the upcoming graduation ceremony.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="announcement-box p-4 rounded shadow-sm d-flex align-items-center">
+                            <div class="me-4 text-center border-end pe-4">
+                                <span class="d-block text-uppercase text-primary fw-bold">@DateTime.Now.ToString("MMM")</span>
+                                <span class="display-6 fw-bold">@DateTime.Now.AddDays(5).Day</span>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold mb-1">New AI Course</h5>
+                                <p class="text-muted mb-0">Enroll now for the new "Introduction to AI" certification course.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
